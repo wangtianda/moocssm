@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="Css/bootstrap.css" />
+<link rel="stylesheet" type="text/css"
+	href="Css/bootstrap-responsive.css" />
+<link rel="stylesheet" type="text/css" href="Css/style.css" />
+<script type="text/javascript" src="js/jquery2.js"></script>
+<script type="text/javascript" src="js/jquery2.sorted.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/ckform.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+
+<style type="text/css">
+body {font-size: 20px;
+	padding-bottom: 40px;
+	background-color: #e9e7ef;
+}
+
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+@media ( max-width : 980px) {
+	/* Enable use of floated navbar text */
+	.navbar-text.pull-right {
+		float: none;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+}
+</style>
+
+<script type="text/javascript">
+onload = function () {
+ 	var thead = document.getElementsByTagName("thead")[0];
+    var tbody = document.getElementsByTagName("tbody")[0];
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.status==200&&xhr.readyState==4) {
+			var jsonObj = JSON.parse(xhr.responseText);
+			var tr= document.createElement("tr");
+            tr.innerHTML = "<th><input id='batch' type='checkbox'></th>"+"<th>文档名称</th>\n" +
+                "\t\t\t\t<th>分类</th>\n" +
+                "\t\t\t\t<th>上传者</th>\n" +
+                "\t\t\t\t<th>上传日期</th>\n" +
+                "\t\t\t\t<th>管理菜单</th>";
+            thead.appendChild(tr);
+            var batch = document.getElementById("batch");
+            batch.onclick=function () {
+                var batchs = document.getElementsByClassName("batchDelete");
+                if (batch.checked==true){
+
+
+                    for (var i = 0; i <batchs.length ; i++) {
+						batchs[i].setAttribute("checked","checked");
+                    }
+                }else{
+                    for (var i = 0; i <batchs.length ; i++) {
+                        batchs[i].removeAttribute("checked");
+                    }
+				}
+            }
+            
+            var batchbtn = document.getElementById("batchids");
+
+            batchbtn.onclick=function () {
+
+                if (confirm("确定要全部删除")) {
+                    var array = new Array(5);
+                    var batchDeletes = document.getElementsByClassName("batchDelete");
+                    for (var i = 0; batchDeletes != null && i < batchDeletes.length; i++) {
+                        if (batchDeletes[i].checked == true) {
+                            array[i] = batchDeletes[i].getAttribute("id");
+                        }
+                    }
+                    //D:\Users\Edianzu\IdeaProjects\mooc\src\com\qfedu\controller\DeleteDocumentByIdAction.java
+                    var jsonStr = JSON.stringify(array);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.status == 200 && xhr.readyState == 4) {
+
+                            alert(999);
+                        }
+                    }
+
+                    xhr.open("post", encodeURI("delete?ids=" + jsonStr));
+                    xhr.send();
+                }
+            }
+            
+
+
+
+
+
+
+
+            for (var i = 0; i < jsonObj.length; i++) {
+                var tr= document.createElement("tr");
+                tr.innerHTML = "<td><input id ='"+jsonObj[i].id+"'  class = 'batchDelete' type='checkbox'></td>"+"<td>"+jsonObj[i].name+"</td>\n" +
+                    "\t\t\t<td>"+jsonObj[i].kind+"</td>\n" +
+                    "\t\t\t<td><a href=\"studentdetail.html\">"+jsonObj[i].uploadUser+"</a></td>\n" +
+                    "\t\t\t<td>"+jsonObj[i].uploadDate+"</td>\n" +
+                    "\n" +
+                    "\t\t\t<td>\n" +
+                    "\t\t\t\t<button type=\"button\" class = 'delete'  id = 'delete-"+jsonObj[i].id+"'>删除</button> </a>\n" +
+                    "\t\t\t</td>\n";
+                tbody.appendChild(tr);
+			}
+			var buttons = $(".delete");
+            for (var i = 0; i <buttons.length ; i++) {
+               bind(buttons[i]);
+            }
+
+            function bind(btn) {
+				btn.onclick = function () {
+					//alert(i);
+					if (confirm("确定删除吗")) {
+
+                        var tr = this.parentNode.parentNode;
+
+					xhr.onreadystatechange=function () {
+						if (xhr.status==200&&xhr.readyState==4){
+
+                                tbody.removeChild(tr);
+						}
+                    }
+                    xhr.open("get","/mooc/delete?id="+this.getAttribute("id"));
+					xhr.send();
+                    }
+                }
+            }
+
+
+        }
+    }
+
+	xhr.open("post","/showAll");
+
+	xhr.send();
+
+
+
+
+
+
+
+
+}
+
+
+
+</script>
+
+</head>
+<body>
+	<form class="form-inline definewidth m20" action="#" method="get">
+		<button  id = "batchids" style="width:60px;height:30px " value="删除" type="button">删除</button> <font color="#777777"><strong>文档名称：</strong></font> <input type="text"
+			name="menuname" id="menuname" class="abc input-default"
+			placeholder="" value="">&nbsp;&nbsp;
+		<button type="submit" class="btn btn-primary">查询</button>
+		&nbsp;&nbsp;
+		<button type="button"  id="addnew">
+			<a href="documentAdd.html">添加文档 
+		</button>
+		</a>
+	</form>
+	<table class="table table-bordered table-hover definewidth m10">
+		<thead>
+
+		</thead>
+
+
+		<tbody>
+
+		</tbody>
+
+
+	</table>
+
+</body>
+</html>
